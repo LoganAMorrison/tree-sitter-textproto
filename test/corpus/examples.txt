@@ -1,0 +1,256 @@
+================================================================================
+Parsing Spec Whitespace and Comments
+================================================================================
+
+value: -2.0   # Valid: no additional whitespace.
+value: - 2.0  # Valid: whitespace between '-' and '2.0'.
+value: -
+  # comment
+  2.0         # Valid: whitespace and comments between '-' and '2.0'.
+value: 2 . 0  # Invalid: the floating point period is part of the lexical
+              # element, so no additional whitespace is allowed.
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (float))
+  (comment)
+  (field
+    name: (identifier)
+    value: (float))
+  (comment)
+  (field
+    name: (identifier)
+    value: (float
+      (comment)))
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (ERROR)
+  (comment)
+  (comment))
+
+================================================================================
+Parsing Spec Edge Case
+================================================================================
+
+foo: 10 bar: 20           # Valid: whitespace separates '10' and 'bar'
+foo: 10,bar: 20           # Valid: ',' separates '10' and 'bar'
+foo: 10[com.foo.ext]: 20  # Valid: '10' is followed immediately by '[', which is
+                          # not an identifier.
+foo: 10bar: 20            # Invalid: no space between '10' and identifier 'bar'.
+
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (extension_name
+      extension: (type_name
+        (identifier)
+        (identifier)
+        (identifier)))
+    value: (integer))
+  (comment)
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment))
+
+================================================================================
+Lexical Spec
+================================================================================
+
+value: 10   # '10' is parsed as a DEC_INT token.
+value: 10f  # '10f' is parsed as a FLOAT token, despite containing '10' which
+            # would also match DEC_INT. In this case, FLOAT matches a longer
+            # subsequence of the input.
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (float))
+  (comment)
+  (comment)
+  (comment))
+
+================================================================================
+Numbers Spec
+================================================================================
+
+foo: 10    # This is an integer value.
+foo: 10f   # This is a floating-point value.
+foo: 1.0f  # Also optional for floating-point literals.
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (float))
+  (comment)
+  (field
+    name: (identifier)
+    value: (float))
+  (comment))
+
+================================================================================
+Strings Spec
+================================================================================
+
+a_string: "first part" 'second part'
+          "third part"
+no_whitespace: "first""second"'third''fourth'
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (multi_string
+      (string)
+      (string)
+      (string)))
+  (field
+    name: (identifier)
+    value: (multi_string
+      (string)
+      (string)
+      (string)
+      (string))))
+
+================================================================================
+Fields
+================================================================================
+
+reg_scalar: 10
+reg_message { foo: "bar" }
+
+[com.foo.ext.scalar]: 10
+[com.foo.ext.message] { foo: "bar" }
+
+any_value {
+  [type.googleapis.com/com.foo.any] { foo: "bar" }
+}
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (message
+      (field
+        name: (identifier)
+        value: (string))))
+  (field
+    name: (extension_name
+      extension: (type_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)))
+    value: (integer))
+  (field
+    name: (extension_name
+      extension: (type_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)))
+    value: (message
+      (field
+        name: (identifier)
+        value: (string))))
+  (field
+    name: (identifier)
+    value: (message
+      (field
+        name: (any_name
+          url: (type_name
+            (identifier)
+            (identifier)
+            (identifier))
+          message: (type_name
+            (identifier)
+            (identifier)
+            (identifier)))
+        value: (message
+          (field
+            name: (identifier)
+            value: (string)))))))
+
+================================================================================
+Message Example
+================================================================================
+
+convolution_benchmark {
+  label: "NHWC_128x20x20x56x160"
+  input {
+    dimension: [128, 56, 20, 20]
+    data_type: DATA_HALF
+    format: TENSOR_NHWC
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(message
+  (field
+    name: (identifier)
+    value: (message
+      (field
+        name: (identifier)
+        value: (string))
+      (field
+        name: (identifier)
+        value: (message
+          (field
+            name: (identifier)
+            value: (scalar_list
+              (integer)
+              (integer)
+              (integer)
+              (integer)))
+          (field
+            name: (identifier)
+            value: (identifier))
+          (field
+            name: (identifier)
+            value: (identifier)))))))

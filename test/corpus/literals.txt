@@ -1,0 +1,144 @@
+================================================================================
+Integer Literals
+================================================================================
+
+# decimal
+value: 0
+value: 10
+
+# oct
+value: 01
+value: 0123
+
+# hex
+value: 0xAb
+value: 0x00abc
+
+--------------------------------------------------------------------------------
+
+(message
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer))
+  (comment)
+  (field
+    name: (identifier)
+    value: (integer))
+  (field
+    name: (identifier)
+    value: (integer)))
+
+================================================================================
+Float Literals
+================================================================================
+
+# floats
+value: 10f
+value: 1.0f
+value: 1.0
+value: 1.0e10
+value: 1.0e-10
+value: 1.0e+10
+
+--------------------------------------------------------------------------------
+
+(message
+  (comment)
+  (field
+    name: (identifier)
+    value: (float))
+  (field
+    name: (identifier)
+    value: (float))
+  (field
+    name: (identifier)
+    value: (float))
+  (field
+    name: (identifier)
+    value: (float))
+  (field
+    name: (identifier)
+    value: (float))
+  (field
+    name: (identifier)
+    value: (float)))
+
+================================================================================
+Identifiers
+================================================================================
+
+# ident
+value: ident
+value: ident_1
+value: i1
+value: _i1
+value: _ident
+
+--------------------------------------------------------------------------------
+
+(message
+  (comment)
+  (field
+    name: (identifier)
+    value: (identifier))
+  (field
+    name: (identifier)
+    value: (identifier))
+  (field
+    name: (identifier)
+    value: (identifier))
+  (field
+    name: (identifier)
+    value: (identifier))
+  (field
+    name: (identifier)
+    value: (identifier)))
+
+================================================================================
+String Literals
+================================================================================
+
+# String
+value: "Hello!"
+value: "Hello! 'inner string'"
+value: 'single quote'
+value: 'single quote "with double quote"'
+
+quote:
+    "When we got into office, the thing that surprised me most was to find "
+    "that things were just as bad as we'd been saying they were.\n\n"
+    "  -- John F. Kennedy"
+
+--------------------------------------------------------------------------------
+
+(message
+  (comment)
+  (field
+    name: (identifier)
+    value: (string))
+  (field
+    name: (identifier)
+    value: (string))
+  (field
+    name: (identifier)
+    value: (string))
+  (field
+    name: (identifier)
+    value: (string))
+  (field
+    name: (identifier)
+    value: (multi_string
+      (string)
+      (string)
+      (string))))
