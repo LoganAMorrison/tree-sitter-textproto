@@ -64,60 +64,16 @@
         ]
       },
       "value": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": ":",
-            "named": false
-          },
-          {
-            "type": "<",
-            "named": false
-          },
-          {
-            "type": ">",
-            "named": false
-          },
-          {
-            "type": "float",
+            "type": "message_field",
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "scalar_field",
             "named": true
-          },
-          {
-            "type": "integer",
-            "named": true
-          },
-          {
-            "type": "message",
-            "named": true
-          },
-          {
-            "type": "message_list",
-            "named": true
-          },
-          {
-            "type": "multi_string",
-            "named": true
-          },
-          {
-            "type": "scalar_list",
-            "named": true
-          },
-          {
-            "type": "string",
-            "named": true
-          },
-          {
-            "type": "{",
-            "named": false
-          },
-          {
-            "type": "}",
-            "named": false
           }
         ]
       }
@@ -149,12 +105,46 @@
     }
   },
   {
+    "type": "message_field",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "message_list",
+          "named": true
+        },
+        {
+          "type": "message_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "message_list",
     "named": true,
     "fields": {},
     "children": {
       "multiple": true,
       "required": true,
+      "types": [
+        {
+          "type": "message_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "message_value",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
       "types": [
         {
           "type": "message",
@@ -171,6 +161,41 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "scalar_field",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "float",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "multi_string",
+          "named": true
+        },
+        {
+          "type": "scalar_list",
+          "named": true
+        },
         {
           "type": "string",
           "named": true

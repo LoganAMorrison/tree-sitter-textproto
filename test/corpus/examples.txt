@@ -15,20 +15,24 @@ value: 2 . 0  # Invalid: the floating point period is part of the lexical
 (message
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (comment)
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (comment)
   (field
     name: (identifier)
-    value: (float
-      (comment)))
+    value: (scalar_field
+      (float
+        (comment))))
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (ERROR)
   (comment)
   (comment))
@@ -49,36 +53,44 @@ foo: 10bar: 20            # Invalid: no space between '10' and identifier 'bar'.
 (message
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (extension_name
       extension: (type_name
         (identifier)
         (identifier)
         (identifier)))
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment))
 
 ================================================================================
@@ -95,11 +107,13 @@ value: 10f  # '10f' is parsed as a FLOAT token, despite containing '10' which
 (message
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (comment)
   (comment)
   (comment))
@@ -117,15 +131,18 @@ foo: 1.0f  # Also optional for floating-point literals.
 (message
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (comment)
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (comment))
 
 ================================================================================
@@ -141,17 +158,19 @@ no_whitespace: "first""second"'third''fourth'
 (message
   (field
     name: (identifier)
-    value: (multi_string
-      (string)
-      (string)
-      (string)))
+    value: (scalar_field
+      (multi_string
+        (string)
+        (string)
+        (string))))
   (field
     name: (identifier)
-    value: (multi_string
-      (string)
-      (string)
-      (string)
-      (string))))
+    value: (scalar_field
+      (multi_string
+        (string)
+        (string)
+        (string)
+        (string)))))
 
 ================================================================================
 Fields
@@ -172,49 +191,62 @@ any_value {
 (message
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (message
-      (field
-        name: (identifier)
-        value: (string))))
-  (field
-    name: (extension_name
-      extension: (type_name
-        (identifier)
-        (identifier)
-        (identifier)
-        (identifier)))
-    value: (integer))
-  (field
-    name: (extension_name
-      extension: (type_name
-        (identifier)
-        (identifier)
-        (identifier)
-        (identifier)))
-    value: (message
-      (field
-        name: (identifier)
-        value: (string))))
-  (field
-    name: (identifier)
-    value: (message
-      (field
-        name: (any_name
-          url: (type_name
-            (identifier)
-            (identifier)
-            (identifier))
-          message: (type_name
-            (identifier)
-            (identifier)
-            (identifier)))
-        value: (message
+    value: (message_field
+      (message_value
+        (message
           (field
             name: (identifier)
-            value: (string)))))))
+            value: (scalar_field
+              (string)))))))
+  (field
+    name: (extension_name
+      extension: (type_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)))
+    value: (scalar_field
+      (integer)))
+  (field
+    name: (extension_name
+      extension: (type_name
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)))
+    value: (message_field
+      (message_value
+        (message
+          (field
+            name: (identifier)
+            value: (scalar_field
+              (string)))))))
+  (field
+    name: (identifier)
+    value: (message_field
+      (message_value
+        (message
+          (field
+            name: (any_name
+              url: (type_name
+                (identifier)
+                (identifier)
+                (identifier))
+              message: (type_name
+                (identifier)
+                (identifier)
+                (identifier)))
+            value: (message_field
+              (message_value
+                (message
+                  (field
+                    name: (identifier)
+                    value: (scalar_field
+                      (string))))))))))))
 
 ================================================================================
 Message Example
@@ -234,23 +266,31 @@ convolution_benchmark {
 (message
   (field
     name: (identifier)
-    value: (message
-      (field
-        name: (identifier)
-        value: (string))
-      (field
-        name: (identifier)
-        value: (message
+    value: (message_field
+      (message_value
+        (message
           (field
             name: (identifier)
-            value: (scalar_list
-              (integer)
-              (integer)
-              (integer)
-              (integer)))
+            value: (scalar_field
+              (string)))
           (field
             name: (identifier)
-            value: (identifier))
-          (field
-            name: (identifier)
-            value: (identifier)))))))
+            value: (message_field
+              (message_value
+                (message
+                  (field
+                    name: (identifier)
+                    value: (scalar_field
+                      (scalar_list
+                        (integer)
+                        (integer)
+                        (integer)
+                        (integer))))
+                  (field
+                    name: (identifier)
+                    value: (scalar_field
+                      (identifier)))
+                  (field
+                    name: (identifier)
+                    value: (scalar_field
+                      (identifier))))))))))))

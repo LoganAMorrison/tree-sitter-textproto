@@ -23,21 +23,21 @@ module.exports = grammar({
     field: $ => seq(
       field("name", $._field_name),
       field("value", choice(
-        $._message_field,
-        $._scalar_field,
+        $.message_field,
+        $.scalar_field,
       )),
       optional(choice(";", ","))
     ),
 
-    _message_field: $ => seq(
+    message_field: $ => seq(
       optional(":"),
       choice(
-        $._message_value,
+        $.message_value,
         $.message_list
       ),
     ),
 
-    _scalar_field: $ => seq(
+    scalar_field: $ => seq(
       ":",
       choice($._scalar_value, $.scalar_list),
     ),
@@ -46,8 +46,8 @@ module.exports = grammar({
     message_list: $ => seq(
       "[",
       seq(
-        $._message_value,
-        repeat(seq(",", $._message_value))
+        $.message_value,
+        repeat(seq(",", $.message_value))
       ),
       "]"
     ),
@@ -61,14 +61,8 @@ module.exports = grammar({
       "]"
     ),
 
-    _value: $ => choice(
-      $._message_value,
-      $._scalar_value,
-    ),
-
-
-    _message_value: $ => choice(
-      seq("{", $.message, "}"),
+    message_value: $ => choice(
+      seq("{", optional($.message), "}"),
       seq("<", $.message, ">")
     ),
 

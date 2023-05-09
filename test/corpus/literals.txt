@@ -20,24 +20,30 @@ value: 0x00abc
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (comment)
   (field
     name: (identifier)
-    value: (integer))
+    value: (scalar_field
+      (integer)))
   (field
     name: (identifier)
-    value: (integer)))
+    value: (scalar_field
+      (integer))))
 
 ================================================================================
 Float Literals
@@ -57,22 +63,28 @@ value: 1.0e+10
   (comment)
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (field
     name: (identifier)
-    value: (float))
+    value: (scalar_field
+      (float)))
   (field
     name: (identifier)
-    value: (float)))
+    value: (scalar_field
+      (float))))
 
 ================================================================================
 Identifiers
@@ -91,19 +103,24 @@ value: _ident
   (comment)
   (field
     name: (identifier)
-    value: (identifier))
+    value: (scalar_field
+      (identifier)))
   (field
     name: (identifier)
-    value: (identifier))
+    value: (scalar_field
+      (identifier)))
   (field
     name: (identifier)
-    value: (identifier))
+    value: (scalar_field
+      (identifier)))
   (field
     name: (identifier)
-    value: (identifier))
+    value: (scalar_field
+      (identifier)))
   (field
     name: (identifier)
-    value: (identifier)))
+    value: (scalar_field
+      (identifier))))
 
 ================================================================================
 String Literals
@@ -126,19 +143,24 @@ quote:
   (comment)
   (field
     name: (identifier)
-    value: (string))
+    value: (scalar_field
+      (string)))
   (field
     name: (identifier)
-    value: (string))
+    value: (scalar_field
+      (string)))
   (field
     name: (identifier)
-    value: (string))
+    value: (scalar_field
+      (string)))
   (field
     name: (identifier)
-    value: (string))
+    value: (scalar_field
+      (string)))
   (field
     name: (identifier)
-    value: (multi_string
-      (string)
-      (string)
-      (string))))
+    value: (scalar_field
+      (multi_string
+        (string)
+        (string)
+        (string)))))

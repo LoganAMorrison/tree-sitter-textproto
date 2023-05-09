@@ -1,0 +1,80 @@
+metadata {
+  key: "notes"
+  value: "This data was generated automatically on 2022-12-20 from 17 samples."
+}
+pipelines {
+  pipeline_name: "PA_FINALIZE"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 27.272843351568312 }
+      intercept: 123.07356326896843
+      max_underestimation_error: 890.1565027509607
+      padding_scale_factor: 1.2
+      r_squared: 0.9455734072161226
+    }
+  }
+}
+pipelines {
+  pipeline_name: "PA_PROCESS_CYCLE_MORPHOLOGY"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 13.868085076289871 }
+      intercept: 172.02853739374507
+      max_underestimation_error: 648.2537712765372
+      padding_scale_factor: 1.2
+      r_squared: 0.948197359236919
+    }
+  }
+}
+pipelines {
+  pipeline_name: "PA_PROCESS_CYCLE"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 8.06193709798326 }
+      intercept: 45.51019215084153
+      max_underestimation_error: 469.3812315443568
+      padding_scale_factor: 1.2
+      r_squared: 0.9245878741643365
+    }
+  }
+}
+pipelines {
+  pipeline_name: "SEGMENT_CYCLE"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 29.219424726121797 }
+      intercept: 1410.134136279845
+      max_underestimation_error: 3732.6264975492004
+      padding_scale_factor: 1.2
+      r_squared: 0.7383390634830065
+    }
+  }
+}
+pipelines {
+  pipeline_name: "SEGMENT_FINALIZE"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 3.0767063268182993 }
+      intercept: 12.134590451704497
+      max_underestimation_error: 93.09883942588885
+      padding_scale_factor: 1.2
+      r_squared: 0.9394132270281644
+    }
+  }
+}
+pipelines {
+  pipeline_name: "PA_OUTPUT_BUNDLE"
+  model {
+    target: "duration_s"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.14 }
+      intercept: 30.0
+      padding_scale_factor: 1.0
+    }
+  }
+}

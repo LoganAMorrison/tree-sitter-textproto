@@ -28,11 +28,11 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_message_field"
+                "name": "message_field"
               },
               {
                 "type": "SYMBOL",
-                "name": "_scalar_field"
+                "name": "scalar_field"
               }
             ]
           }
@@ -60,7 +60,7 @@
         }
       ]
     },
-    "_message_field": {
+    "message_field": {
       "type": "SEQ",
       "members": [
         {
@@ -80,7 +80,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_message_value"
+              "name": "message_value"
             },
             {
               "type": "SYMBOL",
@@ -90,7 +90,7 @@
         }
       ]
     },
-    "_scalar_field": {
+    "scalar_field": {
       "type": "SEQ",
       "members": [
         {
@@ -124,7 +124,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "_message_value"
+              "name": "message_value"
             },
             {
               "type": "REPEAT",
@@ -137,7 +137,7 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "_message_value"
+                    "name": "message_value"
                   }
                 ]
               }
@@ -188,20 +188,7 @@
         }
       ]
     },
-    "_value": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_message_value"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_scalar_value"
-        }
-      ]
-    },
-    "_message_value": {
+    "message_value": {
       "type": "CHOICE",
       "members": [
         {
@@ -212,8 +199,16 @@
               "value": "{"
             },
             {
-              "type": "SYMBOL",
-              "name": "message"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "message"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             },
             {
               "type": "STRING",

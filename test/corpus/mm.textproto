@@ -1,0 +1,1687 @@
+# proto-file: regression_models.proto
+# proto-message: ResourceModelsDataset
+
+# The linear_model_with_error_correction is:
+#   f = P * (m1 * x1 + ... + mn * xn) + b + E
+# where f is the predicted value, x1,...,xn are the features, m1,...,mn are the
+# coefficients used to fit the model to data and b is the intercept fit. The
+# parameters P and E are values used to modify the model without refitting. P is
+# a factor to rescale the coefficients of the features and E is used to shift
+# the intercept.
+#
+# The format for a stage models is:
+#   stages {
+#     stage_name: "STAGE_NAME"
+#     chunk_model {
+#       target: "TARGET_TO_PREDICT"
+#       linear_model_with_error_correction {
+#         # features and their coefficients (from fit). These can be repeated
+#         # for as many features as you have.
+#         features { name: "feature1" coefficient: 1.0 }
+#         features { name: "feature2" coefficient: 2.0 }
+#         # The intercept (b parameter)
+#         intercept: 0.0
+#         # The constant shift (E parameter)
+#         max_underestimation_error: 0.0
+#         # The coefficient rescaling (P parameter)
+#         padding_scale_factor: 1.4
+#         # The coefficient of determination (from the fit)
+#         r_squared: 0.0
+#       }
+#     }
+#     join_model {
+#       target: "TARGET_TO_PREDICT"
+#       linear_model_with_error_correction {
+#         # Same as above
+#       }
+#     }
+#  }
+#
+
+
+[com.foo.ext.message] { foo: "bar" }
+
+any_value {
+  [type.googleapis.com/com.foo.any] { foo: "bar" }
+}
+
+a_string: "first part" 'second part'
+          "third part"
+no_whitespace: "first""second"'third''fourth'
+
+foo: 10    # This is an integer value.
+foo: 10f   # This is a floating-point value.
+foo: 1.0f  # Also optional for floating-point literals.
+foo: "true"  # Also optional for floating-point literals.
+
+convolution_benchmark {
+  label: "NHWC_128x20x20x56x160"
+  input {
+    dimension: [128, 56, 20, 20]
+    data_type: DATA_HALF
+    format: TENSOR_NHWC
+  }
+}
+
+stages {
+  stage_name: "ADD_MOCK_TRANSFORM_DET"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.007240091325272768 }
+      intercept: 0.36176559607306197
+      max_underestimation_error: 5.541781180261766
+      padding_scale_factor: 1.4
+      r_squared: 0.5062628868080743
+    }
+  }
+}
+stages {
+  stage_name: "AGGREGATE_METRICS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 6.477912531353261e-13
+      }
+      intercept: 0.4003549099805355
+      max_underestimation_error: 0.8850115485570041
+      padding_scale_factor: 1.4
+      r_squared: 0.8948117261818763
+    }
+  }
+}
+stages {
+  stage_name: "AGGREGATE_SCAN_DATA"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_decoding_cycles" coefficient: 1.0 }
+      intercept: 1.51460162423142
+      max_underestimation_error: 2.605840649692568
+      padding_scale_factor: 1.4
+      r_squared: 0.9
+    }
+  }
+}
+stages {
+  stage_name: "ANALYZER_SETUP"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "BUILD_DECODING_MODEL"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 3.1892006108960897e-10 }
+      intercept: 0.3614378429238323
+      max_underestimation_error: 0.9276451365227365
+      padding_scale_factor: 1.4
+      r_squared: 0.315200721255703
+    }
+  }
+}
+stages {
+  stage_name: "ANALYZE_BLOBS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_per_z_level"
+        coefficient: 3e-08
+      }
+      intercept: -0.7739170367207677
+      max_underestimation_error: 13.885927540715885
+      padding_scale_factor: 1.2
+      r_squared: 0.9674873136356521
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 32.0 }
+  }
+}
+stages {
+  stage_name: "CALCULATE_NUCLEAR_BACKGROUND_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "COLOCATE_DUAL_LABELED_BLOBS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_decoding_cycles" coefficient: 1.3284813079285107 }
+      intercept: -5.6646091643111305
+      max_underestimation_error: 0.2733359028589639
+      padding_scale_factor: 1.4
+      r_squared: 0.9856421935965571
+    }
+  }
+}
+stages {
+  stage_name: "COMBINE_CLUSTERING"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "COMBINE_DIRECTION_METRICS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "COMPUTE_NUCLEAR_DISTANCE"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.200569155772623 }
+      intercept: -0.25935242299372696
+      max_underestimation_error: 12.799081685709288
+      padding_scale_factor: 1.4
+      r_squared: 0.915120152009903
+    }
+  }
+}
+stages {
+  stage_name: "COMPUTE_APT_METRICS_DX"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.008862904190489043 }
+      intercept: 0.5004211456108862
+      max_underestimation_error: 2.128262338130479
+      padding_scale_factor: 1.4
+      r_squared: 0.2498879223615148
+    }
+  }
+}
+stages {
+  stage_name: "COMPUTE_EXCLUSIVITY_METRICS_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.008862904190489043 }
+      intercept: 0.5004211456108862
+      max_underestimation_error: 2.128262338130479
+      padding_scale_factor: 1.4
+      r_squared: 0.2498879223615148
+    }
+  }
+}
+stages {
+  stage_name: "CONCATENATE_MATRIX"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "CRAFT_ZIGGY_URL"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "CREATE_AUX_OUTPUTS_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "CREATE_DECODING_PLAN"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 6.569221341018506e-13
+      }
+      intercept: 0.8625551976375398
+      max_underestimation_error: 4.6702706908679685
+      padding_scale_factor: 1.4
+      r_squared: 0.3393348654790761
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_DEV_REPORT"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 7.642172350821978e-12
+      }
+      intercept: 0.20650379615450554
+      max_underestimation_error: 7.861829735643811
+      padding_scale_factor: 1.1
+      r_squared: 0.9938447806307944
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_GENE_MATRIX"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.200569155772623 }
+      intercept: -0.25935242299372696
+      max_underestimation_error: 12.799081685709288
+      padding_scale_factor: 1.4
+      r_squared: 0.915120152009903
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_IMAGE_LIBRARY"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 4.905972625050329e-13
+      }
+      intercept: 0.6329261970515426
+      max_underestimation_error: 3.336384134532137
+      padding_scale_factor: 1.3
+      r_squared: 0.35364057529607507
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 8.008604382039018e-13
+      }
+      intercept: 1.0099563733663268
+      max_underestimation_error: 5.679232757423594
+      padding_scale_factor: 1.4
+      r_squared: 0.3388727548896414
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_MATRIX_MTX"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "CREATE_MATRIX_ZARR"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0036623649773423993 }
+      intercept: 0.2005016226229394
+      max_underestimation_error: 0.6653926610839027
+      padding_scale_factor: 1.4
+      r_squared: 0.6737829582855359
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_METRICS_SUMMARY_CSV_CS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "CREATE_TRANSCRIPTS_CSV"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.03091197449804847 }
+      intercept: 0.15399775868434928
+      max_underestimation_error: 3.848247156443398
+      padding_scale_factor: 1.4
+      r_squared: 0.766735202299828
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.052173527491240296 }
+      intercept: 0.013846044652786382
+      max_underestimation_error: 6.659440360916882
+      padding_scale_factor: 1.4
+      r_squared: 0.7418687203659912
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_DX"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.052173527491240296 }
+      intercept: 0.013846044652786382
+      max_underestimation_error: 6.659440360916882
+      padding_scale_factor: 1.4
+      r_squared: 0.7418687203659912
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_DET_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_IMAGE_VIEWER_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "CREATE_WEB_SUMMARY_STAIN_ANALYZER_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "DECODE_POINTS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 3.1892006108960896e-08 }
+      intercept: 0.3614378429238323
+      max_underestimation_error: 1.144507842277036
+      padding_scale_factor: 2.0
+      r_squared: 0.315200721255703
+    }
+  }
+}
+stages {
+  stage_name: "DEDUPLICATE_RNA_HV"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "DEDUPLICATE_RNA_DIAG"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "DETECT_OUTSIDE_TX_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_per_z_level"
+        coefficient: 9.774327864988334e-10
+      }
+      intercept: 0.34128821282023436
+      max_underestimation_error: 13.58953785100069
+      padding_scale_factor: 1.4
+      r_squared: 0.7118390345682293
+    }
+  }
+}
+stages {
+  stage_name: "DETECT_TISSUE"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "pixels_single_channel_per_zstack"
+        coefficient: 9.74857106908275e-09
+      }
+      intercept: 0.02740884478498984
+      max_underestimation_error: 2.2301914482479064
+      padding_scale_factor: 1.4
+      r_squared: 0.42856839464376906
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "ESTIMATE_BRIGHTNESS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 7.40021093597194e-13
+      }
+      intercept: 0.41866702775909714
+      max_underestimation_error: 6.317406561968203
+      padding_scale_factor: 1.0
+      r_squared: 0.9309487249616595
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.897046969719744e-13
+      }
+      intercept: 0.5116069692549425
+      max_underestimation_error: 1.9629173952330474
+      padding_scale_factor: 1.1
+      r_squared: 0.33826251105165295
+    }
+  }
+}
+stages {
+  stage_name: "ESTIMATE_FOV_POSITIONS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.005113800721493021 }
+      intercept: 0.2625596217152301
+      max_underestimation_error: 2.98475795798765
+      padding_scale_factor: 1.4
+      r_squared: 0.7219090371889808
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0038409989659658984 }
+      intercept: 0.32958774288033965
+      max_underestimation_error: 2.8425926239944626
+      padding_scale_factor: 1.1
+      r_squared: 0.2589934120850743
+    }
+  }
+}
+stages {
+  stage_name: "ESTIMATE_LOCALIZATION_ERROR_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "pixels_single_channel_per_zstack"
+        coefficient: 2.5040629862275007e-08
+      }
+      intercept: -2.5586467646572117
+      max_underestimation_error: 5.249430173744866
+      padding_scale_factor: 1.0
+      r_squared: 0.8224352734559337
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "ESTIMATE_STRIPPING_ERRORS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 7.40021093597194e-13
+      }
+      intercept: 0.41866702775909714
+      max_underestimation_error: 6.317406561968203
+      padding_scale_factor: 1.0
+      r_squared: 0.9309487249616595
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.897046969719744e-13
+      }
+      intercept: 0.5116069692549425
+      max_underestimation_error: 1.9629173952330474
+      padding_scale_factor: 1.1
+      r_squared: 0.33826251105165295
+    }
+  }
+}
+stages {
+  stage_name: "EXPAND_NUCLEI"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.09736494909055722 }
+      intercept: 0.5852145003165605
+      max_underestimation_error: 7.545083340289185
+      padding_scale_factor: 1.4
+      r_squared: 0.9539123589250337
+    }
+  }
+}
+stages {
+  stage_name: "EXPAND_CELLS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.09736494909055722 }
+      intercept: 0.5852145003165605
+      max_underestimation_error: 7.545083340289185
+      padding_scale_factor: 1.4
+      r_squared: 0.9539123589250337
+    }
+  }
+}
+stages {
+  stage_name: "PAIR_CELLS_NUCLEI_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.09736494909055722 }
+      intercept: 0.5852145003165605
+      max_underestimation_error: 7.545083340289185
+      padding_scale_factor: 1.4
+      r_squared: 0.9539123589250337
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_CELLS_DATASET_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.09736494909055722 }
+      intercept: 0.5852145003165605
+      max_underestimation_error: 7.545083340289185
+      padding_scale_factor: 1.4
+      r_squared: 0.9539123589250337
+    }
+  }
+}
+stages {
+  stage_name: "EXPORT_DATASETS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 6.935071180336142e-12
+      }
+      intercept: -0.2489793916648253
+      max_underestimation_error: 23.9868242447792
+      padding_scale_factor: 1.4
+      r_squared: 0.8421002525667123
+    }
+  }
+}
+stages {
+  stage_name: "FINALIZE_REGISTRATION"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.248015448367015e-13
+      }
+      intercept: 0.29822983816908233
+      max_underestimation_error: 0.9244443523847305
+      padding_scale_factor: 1.4
+      r_squared: 0.34708292686485853
+    }
+  }
+}
+stages {
+  stage_name: "FINALIZE_RNA_DEDUPLICATION"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 4.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.6258593793152513e-12
+      }
+      intercept: -0.09715749984908273
+      max_underestimation_error: 8.9240965110426
+      padding_scale_factor: 1.4
+      r_squared: 0.8333742396246934
+    }
+  }
+}
+stages {
+  stage_name: "FIND_BLOBS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "pixels_single_channel_per_zstack"
+        coefficient: 1.2414863128531006e-08
+      }
+      intercept: 0.40881742960177814
+      max_underestimation_error: 2.316260879166403
+      padding_scale_factor: 1.1
+      r_squared: 0.2725711650733563
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "FIND_PROJECTIONS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 3.8821943762282735e-13
+      }
+      intercept: 2.997252002827307
+      max_underestimation_error: 6.299725200282731
+      padding_scale_factor: 1.1
+      r_squared: 0.8737829054658409
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0009213856775497258 }
+      intercept: 0.3055138510706956
+      max_underestimation_error: 0.15330438531771642
+      padding_scale_factor: 1.4
+      r_squared: 0.7938059655134647
+    }
+  }
+}
+stages {
+  stage_name: "FINE_TUNE_REGISTRATION"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_localized_blobs"
+        coefficient: 1.104852419295116e-09
+      }
+      intercept: 0.3580235727283873
+      max_underestimation_error: 0.930377945981464
+      padding_scale_factor: 1.4
+      r_squared: 0.35159799523345514
+    }
+  }
+}
+stages {
+  stage_name: "FORMAT_OUTPUTS_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.2472547526347298e-13
+      }
+      intercept: 0.3007725937514312
+      max_underestimation_error: 0.9290935553713071
+      padding_scale_factor: 1.4
+      r_squared: 0.34609380154496006
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_BLOB_PLOTS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 1.050240894520575e-09 }
+      intercept: 1.1887565314717774
+      max_underestimation_error: 2.609684515125588
+      padding_scale_factor: 1.1
+      r_squared: 0.6542199386522902
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.0643008297737697e-13
+      }
+      intercept: 0.4724443890272141
+      max_underestimation_error: 0.20456720715670185
+      padding_scale_factor: 1.1
+      r_squared: 0.5420322487827216
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_CELL_METRICS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.14637372532509887 }
+      intercept: 0.18974455242737154
+      max_underestimation_error: 11.076003872593539
+      padding_scale_factor: 1.4
+      r_squared: 0.9514049767705082
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_DECODING_DIAGNOSTICS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 1.050240894520575e-09 }
+      intercept: 1.1887565314717774
+      max_underestimation_error: 2.609684515125588
+      padding_scale_factor: 1.1
+      r_squared: 0.6542199386522902
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.0643008297737697e-13
+      }
+      intercept: 0.4724443890272141
+      max_underestimation_error: 0.20456720715670185
+      padding_scale_factor: 1.1
+      r_squared: 0.5420322487827216
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_DECODING_METRICS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.12118968745483776 }
+      intercept: -0.5376515160696045
+      max_underestimation_error: 18.59386911361691
+      padding_scale_factor: 1.4
+      r_squared: 0.7372973018813946
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_DECODING_METRICS_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.12118968745483776 }
+      intercept: -0.5376515160696045
+      max_underestimation_error: 18.59386911361691
+      padding_scale_factor: 1.4
+      r_squared: 0.7372973018813946
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_MORPHOLOGY_PLOTS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "GENERATE_CODEWORD_CSV_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.200569155772623 }
+      intercept: -0.25935242299372696
+      max_underestimation_error: 18.0
+      padding_scale_factor: 1.4
+      r_squared: 0.915120152009903
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.200569155772623 }
+      intercept: -0.25935242299372696
+      max_underestimation_error: 18.0
+      padding_scale_factor: 1.4
+      r_squared: 0.915120152009903
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_RNA_DEDUPLICATION_PLOTS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 4.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.6258593793152513e-12
+      }
+      intercept: -0.09715749984908273
+      max_underestimation_error: 8.9240965110426
+      padding_scale_factor: 1.4
+      r_squared: 0.8333742396246934
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_SAMPLE_METRICS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "GENERATE_SPATIAL_PLOTS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.07771604424670424 }
+      intercept: -0.2811991528653379
+      max_underestimation_error: 9.726322026034484
+      padding_scale_factor: 1.4
+      r_squared: 0.7539164918112944
+    }
+  }
+}
+stages {
+  stage_name: "GENERATE_TX_PER_ZBIN_PLOTS_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "INSTRUMENTIFY_DECODING_PLAN"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_all_z_levels"
+        coefficient: 2.9915175875236005e-11
+      }
+      intercept: 0.2665857477673048
+      max_underestimation_error: 0.2636063564355253
+      padding_scale_factor: 1.4
+      r_squared: 0.9819325603622654
+    }
+  }
+}
+stages {
+  stage_name: "CALCULATE_STAIN_CELL_METRICS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.11336614929373642 }
+      intercept: 0.801012370897149
+      max_underestimation_error: 8.10987266895863
+      padding_scale_factor: 1.4
+      r_squared: 0.9177113084424119
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "CALCULATE_STAIN_IMAGE_PATCH_METRICS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.11336614929373642 }
+      intercept: 0.801012370897149
+      max_underestimation_error: 8.10987266895863
+      padding_scale_factor: 1.4
+      r_squared: 0.9177113084424119
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "CALCULATE_STAIN_STITCHED_IMAGE_METRICS_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.11336614929373642 }
+      intercept: 0.801012370897149
+      max_underestimation_error: 8.10987266895863
+      padding_scale_factor: 1.4
+      r_squared: 0.9177113084424119
+    }
+  }
+}
+stages {
+  stage_name: "LABEL_CELLS_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.004493684549796656 }
+      intercept: 5.693618456668077
+      max_underestimation_error: 6.217276069116817
+      padding_scale_factor: 1.4
+      r_squared: 0.0026654241220516184
+    }
+  }
+}
+stages {
+  stage_name: "MAKE_MORPHOLOGY_PYRAMID"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.11336614929373642 }
+      intercept: 0.801012370897149
+      max_underestimation_error: 8.10987266895863
+      padding_scale_factor: 1.4
+      r_squared: 0.9177113084424119
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "MAKE_PYRAMID"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.15117971397345456 }
+      intercept: 1.0898354869175892
+      max_underestimation_error: 7.393987051372729
+      padding_scale_factor: 1.4
+      r_squared: 0.9709814382123138
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "MEASURE_CELL_INTENSITY_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "MERGE_DETAILS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "MERGE_METRICS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "MERGE_METRICS_INSITU_QC"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "MERGE_STAIN_ANALYSIS_SUMMARY_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0874716015083455 }
+      intercept: 0.1647031603325977
+      max_underestimation_error: 7.938313622635609
+      padding_scale_factor: 1.4
+      r_squared: 0.8070232706420625
+    }
+  }
+}
+stages {
+  stage_name: "NUCLEAR_DISTANCE_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_per_z_level"
+        coefficient: 1.256404801223947e-08
+      }
+      intercept: 0.039558526378459025
+      max_underestimation_error: 11.064224850904717
+      padding_scale_factor: 1.4
+      r_squared: 0.9671075276010918
+    }
+  }
+}
+stages {
+  stage_name: "PARSE_SAMPLE_BAG"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "PA_CREATE_SETUP_OUTPUT"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_per_z_level"
+        coefficient: 1.514586301855191e-10
+      }
+      intercept: 0.5079005177148463
+      max_underestimation_error: 2.2026622630854393
+      padding_scale_factor: 1.4
+      r_squared: 0.2613195646159938
+    }
+  }
+}
+stages {
+  stage_name: "PA_PARSE_IMAGING_PLAN"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "POPULATE_DECODING_PLAN"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_all_z_levels"
+        coefficient: 1.3761207329212627e-11
+      }
+      intercept: 0.20538600577695057
+      max_underestimation_error: 0.09073338122498491
+      padding_scale_factor: 1.4
+      r_squared: 0.999747854097421
+    }
+  }
+}
+stages {
+  stage_name: "PREPROCESS_MORPHOLOGY_IMAGE"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_all_z_levels"
+        coefficient: 4.5e-11
+      }
+      intercept: 6.0
+      max_underestimation_error: 5.498353532300563
+      padding_scale_factor: 1.4
+      r_squared: 0.8368440960657121
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "REGISTER_CYCLES_DAPI"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "pixels_single_channel_per_zstack"
+        coefficient: 4.730961460510307e-09
+      }
+      intercept: 3.711310009611463
+      max_underestimation_error: 2.2644970549214287
+      padding_scale_factor: 1.4
+      r_squared: 0.379864235819381
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.420275197640115e-13
+      }
+      intercept: 0.3198811259076253
+      max_underestimation_error: 0.4888859009895095
+      padding_scale_factor: 1.4
+      r_squared: 0.5297543108612668
+    }
+  }
+}
+stages {
+  stage_name: "REGISTER_DECODING_CYCLES_POINTS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_decoding_cycles" coefficient: 1.3284813079285107 }
+      intercept: -5.6646091643111305
+      max_underestimation_error: 0.2733359028589639
+      padding_scale_factor: 1.4
+      r_squared: 0.9856421935965571
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "REGISTER_LOCALIZATION_CYCLE_POINTS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 1.8913727549594915e-08 }
+      intercept: 1.71426611450004
+      max_underestimation_error: 0.9278617673856849
+      padding_scale_factor: 1.4
+      r_squared: 0.6423526721865076
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "RUN_DIFFERENTIAL_EXPRESSION"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 1.6760425555969713e-10 }
+      intercept: 0.010481497012871821
+      max_underestimation_error: 0.13382775340842828
+      padding_scale_factor: 1.4
+      r_squared: 0.8451428665006937
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_GRAPH_CLUSTERING"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.027006327835221895 }
+      intercept: -0.12152445695935926
+      max_underestimation_error: 2.66492116566784
+      padding_scale_factor: 1.4
+      r_squared: 0.7005124447128597
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_IMAGE_QC"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.753499490978093e-12
+      }
+      intercept: 3.0400401641311197
+      max_underestimation_error: 9.756571866451958
+      padding_scale_factor: 1.1
+      r_squared: 0.9449473577005907
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.0006713099401110305 }
+      intercept: 0.2163067096458359
+      max_underestimation_error: 0.10339942681021441
+      padding_scale_factor: 1.4
+      r_squared: 0.9262229385553457
+    }
+  }
+}
+stages {
+  stage_name: "RUN_KMEANS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_blobs" coefficient: 1.3469594209481597e-10 }
+      intercept: 0.13465428229931736
+      max_underestimation_error: 0.15475182031310505
+      padding_scale_factor: 1.4
+      r_squared: 0.8660897869083447
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_PCA"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_TSNE"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_per_z_level"
+        coefficient: 5.94342646093826e-10
+      }
+      intercept: -0.014520522038493633
+      max_underestimation_error: 0.5691036675337917
+      padding_scale_factor: 1.4
+      r_squared: 0.7581335834482391
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_UMAP"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_per_z_level"
+        coefficient: 7.420713550500171e-10
+      }
+      intercept: -0.0024817376767256316
+      max_underestimation_error: 0.7364475041931712
+      padding_scale_factor: 1.4
+      r_squared: 0.7519630219538086
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 1.0 }
+  }
+}
+stages {
+  stage_name: "RUN_ZSTACK_QC"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 4.054289044795569e-13
+      }
+      intercept: 2.9412608270054665
+      max_underestimation_error: 4.903300019803871
+      padding_scale_factor: 1.4
+      r_squared: 0.8809963784397341
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.877176746446872e-12
+      }
+      intercept: 0.2170419567474866
+      max_underestimation_error: 2.2218225059855907
+      padding_scale_factor: 1.0
+      r_squared: 0.9999204972074648
+    }
+  }
+}
+stages {
+  stage_name: "SAVE_IMG_VOLUME"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "pixels_single_channel_per_zstack" }
+      intercept: 5.041768832360544
+      max_underestimation_error: 5.409924815085626
+      padding_scale_factor: 1.4
+    }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "SEGMENT_CELLS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" }
+      intercept: 0.6175535854290157
+      max_underestimation_error: 0.5043572225218874
+      padding_scale_factor: 1.4
+    }
+  }
+}
+stages {
+  stage_name: "SEGMENT_CELLS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" }
+      intercept: 0.6175535854290157
+      max_underestimation_error: 0.5043572225218874
+      padding_scale_factor: 1.4
+    }
+  }
+}
+stages {
+  stage_name: "SEGMENT_NUCLEI_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" }
+      intercept: 0.6175535854290157
+      max_underestimation_error: 0.5043572225218874
+      padding_scale_factor: 1.4
+    }
+  }
+}
+stages {
+  stage_name: "SELECT_ANALYZER_OUTS"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "SETUP_ANALYZER"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 7.278632420936433e-14
+      }
+      intercept: 0.07404242206973907
+      max_underestimation_error: 0.33337048653738116
+      padding_scale_factor: 1.4
+      r_squared: 0.8030639302735783
+    }
+  }
+}
+stages {
+  stage_name: "SETUP_COUNTER"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.2482827504052932e-13
+      }
+      intercept: 0.27603077141440663
+      max_underestimation_error: 0.9226146892157066
+      padding_scale_factor: 1.4
+      r_squared: 0.34639267823997544
+    }
+  }
+}
+stages {
+  stage_name: "SETUP_COUNTER_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 8.0 }
+  }
+}
+stages {
+  stage_name: "SETUP_METRIC_CALCULATOR_PD"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 1.2505990526417635e-13
+      }
+      intercept: 0.13836214606526315
+      max_underestimation_error: 0.8606039863265548
+      padding_scale_factor: 1.4
+      r_squared: 0.34684396742743606
+    }
+  }
+}
+stages {
+  stage_name: "SETUP_PIPELINE"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_decoding_cycles" coefficient: 0.07546829032389098 }
+      intercept: -0.1419895600775939
+      max_underestimation_error: 1.756186043785848
+      padding_scale_factor: 1.4
+      r_squared: 0.3898211291740641
+    }
+  }
+}
+stages {
+  stage_name: "SETUP_REGISTRATION"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_decoding_cycles" coefficient: 0.0318068245242786 }
+      intercept: 0.010226041386561302
+      max_underestimation_error: 0.8064920793253686
+      padding_scale_factor: 1.4
+      r_squared: 0.38418701238187003
+    }
+  }
+}
+stages {
+  stage_name: "STITCH_SEGMENTATION"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_single_channel_all_z_levels"
+        coefficient: 7.234844393131548e-11
+      }
+      intercept: 0.5747172456979104
+      max_underestimation_error: 0.8136181096374907
+      padding_scale_factor: 1.4
+      r_squared: 0.9778166635882102
+    }
+  }
+}
+stages {
+  stage_name: "STORE_RNA_DATASET_CS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.1655742700069444e-12
+      }
+      intercept: -0.08212276430804732
+      max_underestimation_error: 7.193180653391185
+      padding_scale_factor: 1.4
+      r_squared: 0.842662562384509
+    }
+  }
+}
+stages {
+  stage_name: "SUMMARIZE_ANALYSIS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+}
+stages {
+  stage_name: "UPGRADE_DATASETS_PD"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "number_rnas" coefficient: 4e-7 }
+      intercept: 4
+      max_underestimation_error: 0.0
+      padding_scale_factor: 1.0
+      r_squared: 0.0
+    }
+  }
+}
+stages {
+  stage_name: "WRITE_CELL_NUCLEI_BOUNDARIES_FILES"
+  chunk_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction { intercept: 2.0 }
+  }
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features { name: "num_fields_of_view" coefficient: 0.2 }
+      intercept: 6.0
+      max_underestimation_error: 7.545083340289185
+      padding_scale_factor: 1.4
+      r_squared: 0.9539123589250337
+    }
+  }
+}
+stages {
+  stage_name: "XR_RELABEL_TRANSCRIPTS"
+  join_model {
+    target: "maxrss_gb"
+    linear_model_with_error_correction {
+      features {
+        name: "total_pixels_all_channels_all_z_levels_all_cycles"
+        coefficient: 2.1655742700069444e-12
+      }
+      intercept: -0.08212276430804732
+      max_underestimation_error: 7.193180653391185
+      padding_scale_factor: 1.4
+      r_squared: 0.842662562384509
+    }
+  }
+}
